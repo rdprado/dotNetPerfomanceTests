@@ -6,7 +6,7 @@ namespace DotNetPerformanceTests
 {
     class Foo
     { 
-        public int account = 223123; 
+        public int account = 1; 
         public string asdfas = "lkdsajn2345fkljsdhnf"; 
         public string c = "lkdsajnf245kljsdhnf"; 
         public string d = "lkdsajnfrfgj56kljsdhnf"; 
@@ -28,7 +28,7 @@ namespace DotNetPerformanceTests
             List<Foo> list = new List<Foo>(); 
             for (int i = 0; i < count; ++i) 
             {
-                list.Add(new Foo()); 
+                list.Add(new Foo() { account = i });
             } 
             ForEach(sw, list); 
             ForEach_ListInitSize(sw, list); 
