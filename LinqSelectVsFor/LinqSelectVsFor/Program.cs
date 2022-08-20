@@ -16,65 +16,99 @@ namespace DotNetPerformanceTests
         public double asd = 2; 
     } 
 
-
     class Program 
     {
-        static int count = 100000;
+        private const int runs = 1000;
+        private const int count = 100000;
+
+        static readonly List<long> foreach1Results = new List<long>(count);
+        static readonly List<long> foreach2Results = new List<long>(count);
+        static readonly List<long> forResults = new List<long>(count);
+        static readonly List<long> selectResults = new List<long>(count);
 
         static void Main(string[] args) 
         {
-            Stopwatch sw = new Stopwatch(); 
             Console.WriteLine("Linq select vs foreach vs for!");
             List<Foo> list = new List<Foo>(); 
             for (int i = 0; i < count; ++i) 
             {
                 list.Add(new Foo() { account = i });
-            } 
-            ForEach(sw, list); 
-            ForEach_ListInitSize(sw, list); 
-            For(sw, list); 
-            LinqSelect(sw, list); 
+            }
+
+            for (int i = 0; i < runs; i++)
+            {
+                foreach1Results.Add(RunForEach(list));
+                foreach2Results.Add(ForEach_ListInitSize(list));
+                forResults.Add(For(list));
+                selectResults.Add(LinqSelect(list));
+            }
+
+            float foreach1Res = 0;
+            float foreach2Res = 0;
+            float forRes = 0;
+            float selectRes = 0;
+            for (int i = 0; i < runs; ++i)
+            {
+                foreach1Res += foreach1Results[i];
+                foreach2Res += foreach2Results[i];
+                forRes += forResults[i];
+                selectRes += selectResults[i];
+            }
+            foreach1Res /= runs;
+            foreach2Res /= runs;
+            forRes /= runs;
+            selectRes /= runs;
+
+            Console.WriteLine($"foreach: {foreach1Res}");
+            Console.WriteLine($"foreach with known size: {foreach2Res}");
+            Console.WriteLine($"for: {forRes}");
+            Console.WriteLine($"select: {selectRes}");
+
             Console.ReadLine(); 
         }
-        private static void ForEach(Stopwatch sw, List<Foo> list) 
+        private static long RunForEach(List<Foo> list) 
         {
             HashSet<string> hashset = new HashSet<string>();
-            sw.Restart();
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             foreach (var el in list)
             {
                 hashset.Add(el.account.ToString()); 
             }
-            sw.Stop(); 
-            Console.WriteLine($"foreach: {sw.ElapsedMilliseconds}"); 
+            sw.Stop();
+            return sw.ElapsedMilliseconds;
         }
-        private static void ForEach_ListInitSize(Stopwatch sw, List<Foo> list) 
+        private static long ForEach_ListInitSize(List<Foo> list) 
         {
-            HashSet<string> hashset = new HashSet<string>(list.Count); 
-            sw.Restart(); 
+            HashSet<string> hashset = new HashSet<string>(list.Count);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             foreach (var el in list) 
             {
                 hashset.Add(el.account.ToString()); 
             } 
-            sw.Stop(); 
-            Console.WriteLine($"foreach with known size: {sw.ElapsedMilliseconds}"); 
+            sw.Stop();
+            return sw.ElapsedMilliseconds;
         } 
-        private static void For(Stopwatch sw, List<Foo> list) 
+        private static long For(List<Foo> list) 
         {
-            HashSet<string> hashset = new HashSet<string>(list.Count); 
-            sw.Restart(); 
+            HashSet<string> hashset = new HashSet<string>(list.Count);
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             for (int i = 0; i < list.Count; i++) 
             {
                 hashset.Add(list[i].ToString()); 
             } 
-            sw.Stop(); 
-            Console.WriteLine($"for: {sw.ElapsedMilliseconds}"); 
+            sw.Stop();
+            return sw.ElapsedMilliseconds;
         }
-        private static void LinqSelect(Stopwatch sw, List<Foo> list)
+        private static long LinqSelect(List<Foo> list)
         {
-            sw.Restart(); 
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             list.Select((el) => el.account.ToString()).ToHashSet();
-            sw.Stop(); 
-            Console.WriteLine($"select: {sw.ElapsedMilliseconds}"); 
+            sw.Stop();
+            return sw.ElapsedMilliseconds;
         } 
     }
 }
