@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-namespace KafkaTestProducer 
+namespace DotNetPerformanceTests 
 {
     class Foo
     { 
@@ -38,7 +38,8 @@ namespace KafkaTestProducer
         }
         private static void ForEach(Stopwatch sw, List<Foo> list) 
         {
-            sw.Restart(); HashSet<string> hashset = new HashSet<string>(); 
+            HashSet<string> hashset = new HashSet<string>();
+            sw.Restart();
             foreach (var el in list)
             {
                 hashset.Add(el.account.ToString()); 
@@ -48,11 +49,11 @@ namespace KafkaTestProducer
         }
         private static void ForEach_ListInitSize(Stopwatch sw, List<Foo> list) 
         {
-            HashSet<string> hashset2 = new HashSet<string>(list.Count); 
+            HashSet<string> hashset = new HashSet<string>(list.Count); 
             sw.Restart(); 
             foreach (var el in list) 
             {
-                hashset2.Add(el.account.ToString()); 
+                hashset.Add(el.account.ToString()); 
             } 
             sw.Stop(); 
             Console.WriteLine($"foreach with known size: {sw.ElapsedMilliseconds}"); 
@@ -70,7 +71,8 @@ namespace KafkaTestProducer
         }
         private static void LinqSelect(Stopwatch sw, List<Foo> list)
         {
-            sw.Restart(); list.Select((el) => el.account.ToString()).ToHashSet();
+            sw.Restart(); 
+            list.Select((el) => el.account.ToString()).ToHashSet();
             sw.Stop(); 
             Console.WriteLine($"select: {sw.ElapsedMilliseconds}"); 
         } 
