@@ -9,7 +9,7 @@ Intel(R) Core(TM) i5-7300HQ CPU @ 2.50GHz   2.50 GHz
 
 |   Size  | Linq Select | Foreach \*1 | Foreach \*2 | For |
 |:-------:|:---------: | :----------: | :---------: | :-: |
-| 100000  |   23ms     |      41ms    |     25ms    | 5ms |
+| 100000  |   13ms     |      19ms    |     11ms    | 6ms |
 
 \*1 - Initialized hashset with no defined size (multiple menmory allocations)  
 \*2 - Initialized hashset with pre defined size (single menmory allocations)
